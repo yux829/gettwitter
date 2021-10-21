@@ -22,6 +22,7 @@ def queryTweet(queryName, since, until, proxy):
     fileName = str(time.strftime("%Y%m%d%H%M%S", time.localtime())) + ".json"
     c.Output = fileName
     c.Store_json = True
+    print(queryName+'-'+since+'-'+until+'-')
     twint.run.Search(c)
     #print('ok...')
     return fileName
@@ -62,9 +63,7 @@ def getAndSave(queryName, since, until, proxy):
             daos.save(tw)
         os.remove(fileName)
 
-
-def getAndSaveAndShow(queryName, since, until, proxy):
-    getAndSave(queryName, since,until,proxy)
+def queryByQueryName2(queryName, since, until):
     datas = daos.queryByQueryName(queryName, since, until)
     results = []
     for data in datas:
@@ -72,8 +71,19 @@ def getAndSaveAndShow(queryName, since, until, proxy):
         result.append(data['time'].strftime("%Y-%m-%d %H:%M:%S"))
         result.append(data['tweet'])
         results.append(result)
-
     return results
+
+def getAndSaveAndShow(queryName, since, until,queryTypeIsView,queryTypeIsAll, proxy):
+    if queryTypeIsView:
+        return queryByQueryName2(queryName, None, None)
+    elif queryTypeIsAll:
+        #循环处理
+
+        return queryByQueryName2(queryName, None, None)
+    else :
+        getAndSave(queryName, since,until,proxy)
+        return queryByQueryName2(queryName, since, until)
+   
 
 
 if __name__ == '__main__':
