@@ -8,13 +8,25 @@ import os
 import daos
 
 
+def searchStr(queryName, userName, lang):
+    queryStr = ''
+    if queryName:
+        queryStr += queryName + ' '
+    if userName:
+        queryStr += "(from:"+userName+") "
+    if lang:
+        queryStr += "lang:"+lang
+    print(queryStr)
+    return queryStr
+
+
 def queryTweet(queryName, since, until, proxy):
     c = twint.Config()
     if proxy:
         c.Proxy_host = proxy.split(':')[0]
         c.Proxy_port = proxy.split(':')[1]
         c.Proxy_type = 'HTTP'
-    c.Search = "(from:"+queryName+")"
+    c.Search = queryName
     if since:
         c.Since = since + ' 00:00:00'
     if until:
@@ -24,7 +36,7 @@ def queryTweet(queryName, since, until, proxy):
     c.Store_json = True
     print(queryName+'-'+since+'-'+until+'-')
     twint.run.Search(c)
-    #print('ok...')
+    # print('ok...')
     return fileName
 
 
@@ -49,7 +61,7 @@ def query4Tweet(queryName, since, until, proxy):
         fileName = queryTweet(queryName, since, until, proxy)
         if os.path.exists(fileName):
             return fileName
-    #print(queryName + '-'+since+'-'+until+'-'+' is not data !')
+    print(queryName + '-'+since+'-'+until+' '+' is not data !')
 
 
 def getAndSave(queryName, since, until, proxy):
@@ -57,11 +69,12 @@ def getAndSave(queryName, since, until, proxy):
     if fileName:
         datas = getJsonData(queryName, fileName)
         for data in datas:
-            #print(data)
+            # print(data)
             tw = Tweet(id=data['id'], query_name=data['query_name'], time=datetime.datetime.strptime(
                 data['time'], "%Y-%m-%d %H:%M:%S"), user_id=data['user_id'], tweet=data['tweet'], file_name=data['file_name'])
             daos.save(tw)
         os.remove(fileName)
+
 
 def queryByQueryName2(queryName, since, until):
     datas = daos.queryByQueryName(queryName, since, until)
@@ -73,22 +86,22 @@ def queryByQueryName2(queryName, since, until):
         results.append(result)
     return results
 
-def getAndSaveAndShow(queryName, since, until,queryTypeIsView,queryTypeIsAll, proxy):
+
+def getAndSaveAndShow(keyName, userName, lang, since, until, queryTypeIsView, queryTypeIsAll, proxy):
+    queryName = searchStr(keyName, userName, lang)
     if queryTypeIsView:
         return queryByQueryName2(queryName, None, None)
     elif queryTypeIsAll:
-        #循环处理
-
+        # 循环处理
         return queryByQueryName2(queryName, None, None)
-    else :
-        getAndSave(queryName, since,until,proxy)
+    else:
+        getAndSave(queryName, since, until, proxy)
         return queryByQueryName2(queryName, since, until)
-   
 
 
 if __name__ == '__main__':
     datas = getAndSaveAndShow(
-        'realsatoshinet', '2021-01-03', '2021-01-20', '127.0.0.1:11000')
-    #for data in datas:
-        #print(data)
+        'dydx', 'yux0829', 'zh-cn', '2021-01-19', '2021-10-22',False,False, '127.0.0.1:11000')
+    for data in datas:
+        print(data)
     print('finished.......')
