@@ -6,6 +6,7 @@ from models import Tweet
 import datetime
 import os
 import daos
+import pdfkit
 
 
 def searchStr(queryName, userName, lang):
@@ -92,16 +93,60 @@ def getAndSaveAndShow(keyName, userName, lang, since, until, queryTypeIsView, qu
     if queryTypeIsView:
         return queryByQueryName2(queryName, None, None)
     elif queryTypeIsAll:
-        # 循环处理
-        return queryByQueryName2(queryName, None, None)
+        # 循环查询该用户100天的记录，写到pdf文件中
+        today = (datetime.datetime.now()).strftime("%Y-%m-%d")
+        deadline = getNextday(today, -365)
+        get365days(queryName, proxy, today, deadline)
+        datas = queryByQueryName2(queryName, None, None)
+        dataBuffer = ''
+        if datas:
+            for data in datas:
+                dataBuffer += data[0] + '\n'
+                dataBuffer += data[1] + '\n'
+                dataBuffer += '\n'
+        fileName=queryName.replace('(','').replace(')', '').replace(' ', '').replace('from:','')+'365.pdf'
+        print(fileName)
+        savePfd(dataBuffer, fileName)
+        return datas
     else:
         getAndSave(queryName, since, until, proxy)
         return queryByQueryName2(queryName, since, until)
 
 
+def savePfd(content, filename):
+    # 将wkhtmltopdf.exe程序绝对路径传入config对象
+    path_wkthmltopdf = r'C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe'
+    config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
+    pdfkit_options = {'encoding': 'UTF-8'}
+    # 生成pdf文件，to_file为文件路径
+    cs = content.split('\n')
+    contents = ''
+    for c in cs:
+        contents += c+'<br/>'
+    string = ('<html><head><meta charset="UTF-8"></head><body>' +
+              contents+'</body></html>')
+    pdfkit.from_string(string, filename, configuration=config,
+                       options=pdfkit_options)
+
+
+def get365days(queryName, proxy, today, deadline: datetime):
+    nDay = getNextday(today, -5)
+    if(nDay >= deadline):
+        print('nday:'+nDay+'--deadline:'+deadline+',continue..')
+        getAndSave(queryName, nDay, today, proxy)
+        get365days(queryName, proxy, nDay, deadline)
+
+
+def getNextday(datastr, n):
+    the_date = datetime.datetime.strptime(datastr, '%Y-%m-%d')
+    result_date = the_date + datetime.timedelta(days=n)
+    d = result_date.strftime('%Y-%m-%d')
+    return d
+
+
 if __name__ == '__main__':
     datas = getAndSaveAndShow(
-        'dydx', 'yux0829', 'zh-cn', '2021-01-19', '2021-10-22',False,False, '127.0.0.1:11000')
+        'dydx', 'yux0829', 'zh-cn', '2021-01-19', '2021-10-22', False, False, '127.0.0.1:11000')
     for data in datas:
         print(data)
     print('finished.......')
