@@ -6,8 +6,6 @@ import datetime
 
 
 sg.theme('lightgrey2')
-
-
     
 
 def main():
