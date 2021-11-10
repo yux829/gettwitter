@@ -27,6 +27,9 @@ v1.3 版本
 如下图：
 ![alt 属性文本](./推特助手3.png)
 
+
 v1.4 版本
+
+
 exe文件太大，无法上传，采用这个命令生成
 pyinstaller -F -w main.py --icon=TWITTER.png
