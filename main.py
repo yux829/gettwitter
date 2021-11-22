@@ -9,11 +9,12 @@ sg.theme('lightgrey2')
     
 
 def main():
-    since = (datetime.datetime.now() - datetime.timedelta(days=20)).strftime("%Y-%m-%d")
+    #since = (datetime.datetime.now() - datetime.timedelta(days=20)).strftime("%Y-%m-%d")
+    since = (datetime.datetime.now()).strftime("%Y-%m-%d")
     until = (datetime.datetime.now()).strftime("%Y-%m-%d")
     data=[]
     header_list = ['时间', '内容']
-    layout = [[sg.T('推特',size=(5,1),justification='right'),sg.Combo(['用户名', '关键字'],size=(10,1),default_value='用户名' ,key='key_query_model'),sg.T(':',size=(1,1)),sg.InputText (key='key_query_name',default_text="realsatoshinet",size=(25,1)),sg.T('时间段从:',size=(8,1)),sg.InputText (key='key_since',default_text=since,size=(13,1)),sg.T('至:',size=(3,1),justification='right'),sg.InputText (key='key_util',default_text=until,size=(13,1)),sg.Button('查询')],[sg.T('处理方式:',size=(10,1),justification='right'),sg.Radio('新获取', "query_type",key='key_query_type_new', default=True, size=(5,1)), sg.Radio('只看不获取', "query_type",key='key_query_type_view'),sg.Radio('深度采集(365天内当前目录下生成同名PDF文件)', "query_type",key='key_query_type_all'),sg.Checkbox('只看中文', default=False,key='key_lang')],[sg.T('代理服务器:',size=(10,1)),sg.InputText(key='key_proxy',size=(70,2),default_text='127.0.0.1:11000')],[sg.InputText(default_text='备注：推特反爬虫技术过于厉害，查询结果可能不全，望包涵!',font=("微软雅黑", 10),justification='left',readonly = True,size=(110,1))],[sg.Multiline(key='key_output',size=(100, 20), font=('微软雅黑 12'))]]
+    layout = [[sg.T('推特',size=(5,1),justification='right'),sg.Combo(['用户名', '关键字'],size=(10,1),default_value='用户名' ,key='key_query_model'),sg.T(':',size=(1,1)),sg.InputText (key='key_query_name',default_text="ChainNewscom",size=(25,1)),sg.T('时间段从:',size=(8,1)),sg.InputText (key='key_since',default_text=since,size=(13,1)),sg.T('至:',size=(3,1),justification='right'),sg.InputText (key='key_util',default_text=until,size=(13,1)),sg.Button('查询')],[sg.T('处理方式:',size=(10,1),justification='right'),sg.Radio('新获取', "query_type",key='key_query_type_new', default=True, size=(5,1)), sg.Radio('只看不获取', "query_type",key='key_query_type_view'),sg.Radio('深度采集(365天内当前目录下生成同名PDF文件)', "query_type",key='key_query_type_all'),sg.Checkbox('只看中文', default=False,key='key_lang')],[sg.T('代理服务器:',size=(10,1)),sg.InputText(key='key_proxy',size=(70,2),default_text='127.0.0.1:11000')],[sg.InputText(default_text='备注：推特反爬虫技术过于厉害，查询结果可能不全，望包涵!',font=("微软雅黑", 10),justification='left',readonly = True,size=(110,1))],[sg.Multiline(key='key_output',size=(100, 20), font=('微软雅黑 12'))]]
 
     window = sg.Window('推特助手', layout, font=("微软雅黑", 12),default_element_size=(100,10) )
 
@@ -54,7 +55,7 @@ def main():
                 if datas:
                     # EXECUTE YOUR COMMAND HERE
                     for data in datas:
-                        dataBuffer +=data[0] +'\n'
+                        dataBuffer +=data[0] +'\n\n'
                         dataBuffer +=data[1] +'\n'
                         dataBuffer +='\n'
                     window['key_output'].update(dataBuffer)
