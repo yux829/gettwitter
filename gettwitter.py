@@ -145,8 +145,21 @@ def getNextday(datastr, n):
 
 
 if __name__ == '__main__':
-    datas = getAndSaveAndShow(
-        'dydx', 'yux0829', 'zh-cn', '2021-01-19', '2021-10-22', False, False, '127.0.0.1:11000')
-    for data in datas:
-        print(data)
+    since = (datetime.datetime.now()).strftime("%Y-%m-%d")
+    since='2021-11-29'
+    until =since
+    until =getNextday(until,1)
+    userName ='LadyofCrypto1'
+    #datas = getAndSaveAndShow(
+    #    'dydx', 'yux0829', 'zh-cn', '2021-01-19', '2021-10-22', False, False, '127.0.0.1:11000')
+    datas = getAndSaveAndShow(None,userName , None,since, until, False, False, '127.0.0.1:11000')
+    dataBuffer = ''
+    if datas:
+            for data in datas:
+                #if(data[1].startswith('@')) :
+                #    continue
+                dataBuffer += data[1] + '\n'
+                dataBuffer +='\n'
+    fileName=userName.replace('(','').replace(')', '').replace(' ', '').replace('from:','')+'-'+since+'.pdf'
+    savePfd(dataBuffer, fileName)
     print('finished.......')
